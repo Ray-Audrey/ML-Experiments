@@ -1,0 +1,432 @@
+
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{longtable}
+
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{ICS1512}
+\rhead{Machine Learning Algorithms Laboratory}
+\cfoot{\thepage}
+
+\lstset{
+language=Python,
+basicstyle=\ttfamily\small,
+numbers=left,
+frame=single,
+breaklines=true,
+showstringspaces=false
+}
+
+\begin{document}
+
+\begin{tabular}{|p{4cm}|p{11cm}|}
+\hline
+Experiment No. & 1 \\ \hline
+
+Experiment Title & 
+Working with Python Packages (NumPy, Pandas, SciPy, Scikit Learn and Matplotlib) 
+
+\footnote{\textbf{GitHub Repository:}
+\url{https://github.com/Ray-Audrey/ML-Experiments}}
+\\ \hline
+
+Student Name & Harshita S \\ \hline
+
+Register Number & 3122247001020 \\ \hline
+
+Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
+
+Submission Date & 27/07/2026 \\ \hline
+\end{tabular}
+
+\section{Objective}
+
+To explore the functionalities of Python libraries including NumPy, Pandas, SciPy, Scikit-Learn, and Matplotlib by implementing a complete machine learning workflow using the Iris dataset. The experiment includes dataset loading, exploratory data analysis, preprocessing, feature selection, classification using multiple machine learning algorithms, and performance evaluation.
+
+\section{Problem Statement}
+
+The objective of this experiment is to understand the complete machine learning workflow using the Iris dataset. The dataset is explored through statistical analysis and visualization, preprocessed using encoding and feature scaling techniques, followed by feature selection. Multiple classification algorithms such as Random Forest, Decision Tree, K-Nearest Neighbors (KNN), and Support Vector Machine (SVM) are trained and evaluated using standard classification metrics to compare their performance.
+
+\section{Dataset Description}
+
+\begin{longtable}{|p{6cm}|p{8cm}|}
+\hline
+Dataset Name & Iris Dataset \\ \hline
+
+Dataset Source & UCI Machine Learning Repository \\ \hline
+
+Number of Samples & 150 \\ \hline
+
+Number of Features & 4 \\ \hline
+
+Number of Classes & 3 \\ \hline
+
+Missing Values & 0 \\ \hline
+
+Duplicate Samples & 3 \\ \hline
+
+Train-Test Split & 80\% Training, 20\% Testing \\ \hline
+
+Feature Selection Method & ANOVA (SelectKBest) \\ \hline
+
+Target Variable & Species \\ \hline
+\end{longtable}
+
+\section{Exploratory Data Analysis}
+
+The Iris dataset was explored using a reusable Exploratory Data Analysis (EDA) function developed in Python. A consolidated EDA figure containing 12 subplots was generated to provide a comprehensive understanding of the dataset. The visualizations include dataset information, statistical summary, missing value analysis, feature distributions, boxplots, scatter plots, class distribution, and correlation analysis. The generated EDA summary figure was included in the report to facilitate visualization and analysis of the dataset.
+
+
+\begin{itemize}
+\item Dataset overview
+\item Statistical summary
+\item Missing value analysis
+\item Class distribution
+\item Correlation matrix
+\item Feature distribution
+\end{itemize}
+
+\subsection*{EDA Summary Figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=\textwidth]{figures/iris_eda.pdf}
+\caption{Comprehensive Exploratory Data Analysis (EDA) of the Iris Dataset}
+\end{figure}
+
+\textbf{Inference:}
+
+The consolidated EDA figure provides a comprehensive overview of the Iris dataset. The dataset contains three balanced flower species with no missing values and only a few duplicate records. Petal length and petal width exhibit stronger discrimination among the species than the sepal measurements. The correlation heatmap shows a strong positive relationship between petal length and petal width, indicating that these features are highly informative for classification. Overall, the dataset is clean, well-balanced, and suitable for supervised machine learning.
+
+\section{Data Preprocessing}
+
+
+The raw Iris dataset was prepared for machine learning using a series of preprocessing steps.
+
+\begin{itemize}
+
+\item \textbf{Missing Value Handling:}
+
+The dataset was checked for missing values. No missing values were found, therefore no imputation technique was required.
+
+\item \textbf{Encoding:}
+
+The target variable ``Species'' contains categorical class labels. Label encoding was applied to convert the categorical species names into numerical class values suitable for machine learning algorithms.
+
+\item \textbf{Feature Scaling:}
+
+Standardization was performed using StandardScaler. The numerical features were transformed to have zero mean and unit variance. Feature scaling improves the performance of distance-based algorithms such as KNN and SVM.
+
+\item \textbf{Train-Test Split:}
+
+The dataset was divided into training and testing sets using an 80:20 ratio. Stratified splitting was applied to maintain equal class distribution in both training and testing datasets.
+
+\item \textbf{Feature Selection:}
+
+ANOVA based SelectKBest feature selection was applied. Since the Iris dataset contains only four meaningful features, all features were retained by setting $k=all$.
+
+\end{itemize}
+
+\section{Machine Learning Algorithms}
+
+Four supervised classification algorithms were implemented and compared.
+
+\subsection{Random Forest}
+
+Random Forest is an ensemble learning algorithm that combines multiple decision trees to improve prediction accuracy. Each tree is trained using randomly selected samples and features, and the final prediction is obtained through majority voting.
+\textbf{Mathematical Formulation:}
+
+Suppose there are $N$ decision trees trained on different bootstrap samples of the dataset. The final prediction of the Random Forest classifier is obtained by majority voting:
+
+\[
+\hat{y}
+=
+\operatorname{mode}
+\left\{
+T_1(x), T_2(x), \ldots, T_N(x)
+\right\}
+\]
+
+where $T_i(x)$ represents the prediction made by the $i^{th}$ decision tree.
+
+\textbf{Advantages}
+
+\begin{itemize}
+\item Handles complex datasets effectively.
+\item Reduces overfitting compared to individual decision trees.
+\item Works well with numerical and categorical features.
+\end{itemize}
+
+\textbf{Limitations}:
+
+\begin{itemize}
+\item Requires higher computational resources.
+\item Less interpretable compared to a single decision tree.
+\end{itemize}
+
+
+\subsection{Decision Tree}
+
+Decision Tree classification uses a tree structure where data is split based on feature values to maximize class separation.
+
+\textbf{Mathematical Formulation:}
+
+Decision Trees split the data by maximizing information gain based on entropy.
+
+\[
+Entropy(S)
+=
+-
+\sum_{i=1}^{c}
+p_i
+\log_2(p_i)
+\]
+
+where $p_i$ is the probability of class $i$.
+
+\textbf{Advantages}
+
+\begin{itemize}
+\item Easy to interpret.
+\item Requires minimal preprocessing.
+\end{itemize}
+
+\textbf{Limitations}:
+
+\begin{itemize}
+\item Can overfit small datasets.
+\item Sensitive to small changes in data.
+\end{itemize}
+
+
+\subsection{K-Nearest Neighbors (KNN)}
+
+KNN classifies a sample based on the majority class among its nearest neighboring samples.
+
+The distance between samples is calculated using:
+
+\[
+d(x,y)=\sqrt{\sum_{i=1}^{n}(x_i-y_i)^2}
+\]
+
+\textbf{Advantages}
+
+\begin{itemize}
+\item Simple implementation.
+\item Effective for small datasets.
+\end{itemize}
+
+\textbf{Limitations}:
+
+\begin{itemize}
+\item Prediction time increases with dataset size.
+\item Sensitive to feature scaling.
+\end{itemize}
+
+
+\subsection{Support Vector Machine (SVM)}
+
+SVM finds an optimal hyperplane that separates different classes by maximizing the margin between support vectors.
+
+\textbf{Mathematical Formulation:}
+
+The separating hyperplane is represented as
+
+\[
+w^Tx+b=0
+\]
+
+where
+
+\begin{itemize}
+\item $w$ is the weight vector.
+\item $b$ is the bias term.
+\end{itemize}
+
+The objective is to maximize the margin between the support vectors of different classes.
+
+\textbf{Advantages}
+
+\begin{itemize}
+\item Effective in high dimensional spaces.
+\item Provides good generalization.
+\end{itemize}
+
+\textbf{Limitations}:
+
+\begin{itemize}
+\item Parameter tuning is required.
+\item Less suitable for very large datasets.
+\end{itemize}
+
+\section{Experimental Setup}
+
+The experiment was implemented using Python in a Jupyter Notebook environment. The complete machine learning workflow was developed using reusable Python modules and executed using the prescribed Anaconda environment.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+Component & Specification\\
+\midrule
+Python Version & Python 3.12 \\
+Scikit-Learn Version & 1.9.0 \\
+IDE & Jupyter Notebook \\
+Operating System & Ubuntu/Linux (Anaconda Environment) \\
+Processor & Intel(R) Core(TM) i7-10610U CPU @ 1.80 GHz \\
+Memory & 16 GB RAM \\
+System Type & 64-bit Operating System, x64-based Processor \\
+\bottomrule
+\end{tabular}
+\caption{Experimental Setup}
+\end{table}
+
+\section{Hyperparameter Selection}
+
+The default hyperparameters provided by Scikit-Learn were used for the classification models.\\
+
+\begin{tabular}{ll}
+\toprule
+Parameter & Value\\
+\midrule
+Random Forest (n\_estimators) & 100 \\
+Random Forest (random\_state) & 42 \\
+Decision Tree (criterion) & Gini \\
+Decision Tree (random\_state) & 42 \\
+KNN (n\_neighbors) & 5 \\
+SVM (kernel) & RBF \\
+Feature Selection & ANOVA (SelectKBest) \\
+Selected Features (k) & all \\
+\bottomrule
+\end{tabular}
+
+\section{Results}
+
+The classification performance of the implemented machine learning algorithms was evaluated using Accuracy, Precision, Recall, F1-score, and ROC-AUC. The results are summarized in Table~1.
+
+\begin{table}[H]
+\centering
+\caption{Performance Comparison of Classification Models}
+\begin{tabular}{lccccc}
+\toprule
+Algorithm & Accuracy & Precision & Recall & F1-score & ROC-AUC\\
+\midrule
+
+Random Forest & 0.9667 & 0.9697 & 0.9667 & 0.9666 & 0.9900\\
+
+Decision Tree & 0.9333 & 0.9333 & 0.9333 & 0.9333 & 0.9500\\
+
+KNN & 0.9333 & 0.9444 & 0.9333 & 0.9327 & 0.9933\\
+
+SVM & 0.9667 & 0.9697 & 0.9667 & 0.9666 & 0.9967\\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Inference:}
+
+The experimental results show that Random Forest and Support Vector Machine achieved the highest classification accuracy of 96.67\%. SVM obtained the highest ROC-AUC score of 0.9967, indicating excellent class separation capability. Decision Tree and KNN achieved slightly lower accuracy of 93.33\%. Overall, ensemble and margin-based classifiers performed better for the Iris dataset.
+
+\section{Result Visualization}
+
+The classification models were further evaluated using confusion matrices, which provide a detailed comparison between the actual and predicted class labels. These visualizations help identify correctly classified samples as well as any misclassifications made by each classifier.
+
+\subsection{Random Forest Classifier}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/random_forest_confusion_matrix.png}
+\caption{Confusion Matrix of the Random Forest Classifier}
+\end{figure}
+
+\textbf{Inference:}
+
+The Random Forest classifier correctly classified 29 out of the 30 testing samples, achieving an overall accuracy of 96.67\%. Only one \textit{Iris-versicolor} sample was misclassified as \textit{Iris-virginica}. The confusion matrix indicates that the classifier effectively separates the three Iris species with minimal classification error.
+
+\vspace{0.3cm}
+
+\subsection{Decision Tree Classifier}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/decision_tree_confusion_matrix.png}
+\caption{Confusion Matrix of the Decision Tree Classifier}
+\end{figure}
+
+\textbf{Inference:}
+
+The Decision Tree classifier achieved an accuracy of 93.33\%. Most samples were classified correctly; however, one \textit{Iris-versicolor} sample and one \textit{Iris-virginica} sample were misclassified. This suggests that these two species exhibit similar feature characteristics, making them comparatively more difficult to distinguish.
+
+\vspace{0.3cm}
+
+\subsection{K-Nearest Neighbors (KNN)}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/knn_confusion_matrix.png}
+\caption{Confusion Matrix of the K-Nearest Neighbors Classifier}
+\end{figure}
+
+\textbf{Inference:}
+
+The KNN classifier correctly identified all \textit{Iris-setosa} and \textit{Iris-versicolor} samples. However, two \textit{Iris-virginica} samples were incorrectly classified as \textit{Iris-versicolor}. Since KNN is a distance-based algorithm, the overlap between these two species in the feature space contributes to these misclassifications.
+
+\vspace{0.3cm}
+
+\subsection{Support Vector Machine (SVM)}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.6\linewidth]{figures/svm_confusion_matrix.png}
+\caption{Confusion Matrix of the Support Vector Machine Classifier}
+\end{figure}
+
+\textbf{Inference:}
+
+The Support Vector Machine classifier achieved an accuracy of 96.67\%, correctly classifying 29 of the 30 testing samples. Similar to the Random Forest classifier, only one sample was misclassified. Combined with the highest ROC--AUC score of 0.9967, the confusion matrix demonstrates the excellent classification capability of the SVM model.
+
+\section{Discussion}
+
+This experiment successfully demonstrated the complete machine learning workflow using the Iris dataset, beginning with data loading and exploratory data analysis, followed by preprocessing, feature selection, model training, and performance evaluation. The exploratory analysis confirmed that the dataset is balanced, contains no missing values, and exhibits strong correlations between petal length and petal width, making these features highly informative for classification.
+
+Standardization of the numerical features improved the performance of distance-based algorithms such as K-Nearest Neighbors and Support Vector Machine. ANOVA-based feature selection was also applied; however, all four features were retained because each contributed meaningful information to the classification task.
+
+Among the evaluated models, Random Forest and Support Vector Machine achieved the highest classification accuracy of 96.67\%. The Support Vector Machine also produced the highest ROC--AUC score (0.9967), indicating superior discriminative capability. Decision Tree and KNN achieved an accuracy of 93.33\%, with only a few misclassifications occurring between the \textit{Iris-versicolor} and \textit{Iris-virginica} classes due to similarities in their feature distributions.
+
+Overall, the experiment highlights the importance of proper preprocessing, feature selection, and model evaluation in building reliable machine learning models. Although the Iris dataset is relatively small and well-structured, the same workflow can be extended to larger and more complex datasets by incorporating techniques such as cross-validation, hyperparameter tuning, and ensemble learning.
+
+\section{Conclusion}
+
+This experiment provided practical experience in implementing a complete machine learning pipeline using Python libraries including NumPy, Pandas, Matplotlib, and Scikit-Learn. The workflow included dataset loading, exploratory data analysis, preprocessing, feature selection, model training, and performance evaluation using multiple supervised classification algorithms.
+
+Four classification models—Random Forest, Decision Tree, K-Nearest Neighbors, and Support Vector Machine—were trained and compared on the Iris dataset. Random Forest and Support Vector Machine achieved the highest classification accuracy of 96.67\%, while the Support Vector Machine produced the highest ROC--AUC score of 0.9967, demonstrating excellent classification performance.
+
+The experiment reinforced the significance of exploratory data analysis, preprocessing, appropriate feature selection, and quantitative performance evaluation in developing accurate and reliable machine learning models. The reusable implementation developed during this experiment also provides a scalable framework that can be applied to future machine learning tasks.
+
+\section{References}
+
+\begin{enumerate}
+
+\item Scikit-learn Developers, \emph{Scikit-learn Documentation}. Available: \url{https://scikit-learn.org/stable/}
+
+\item Dua, D., and Graff, C., \emph{UCI Machine Learning Repository: Iris Data Set}. Available: \url{https://archive.ics.uci.edu/ml/datasets/iris}
+
+\item Géron, A., \emph{Hands-On Machine Learning with Scikit-Learn, Keras \& TensorFlow}, 3rd ed., O'Reilly Media, 2023.
+
+\end{enumerate}
+
+\end{document}

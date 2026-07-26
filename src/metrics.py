@@ -151,7 +151,83 @@ def classification_metrics(
         plt.show()
         plt.close(fig)
 
-   
+   # ------------------------------------------------------
+    # ROC Curve
+    # ------------------------------------------------------
+
+    try:
+
+        fig, ax = plt.subplots(figsize=(6,5))
+
+        RocCurveDisplay.from_estimator(
+            model,
+            X_test,
+            y_test,
+            ax=ax
+        )
+
+        ax.set_title(
+            f"{model_name.replace('_',' ').title()} ROC Curve",
+            fontweight="bold"
+        )
+
+        if save_plots:
+
+            fig.savefig(
+                os.path.join(
+                    save_dir,
+                    f"{model_name}_roc_curve.png"
+                ),
+                dpi=600,
+                bbox_inches="tight"
+            )
+
+        plt.show()
+        plt.close(fig)
+
+    except:
+        pass
+
+    # ------------------------------------------------------
+    # Precision Recall Curve
+    # ------------------------------------------------------
+
+    try:
+
+        fig, ax = plt.subplots(figsize=(6,5))
+
+        PrecisionRecallDisplay.from_estimator(
+            model,
+            X_test,
+            y_test,
+            ax=ax
+        )
+
+        ax.set_title(
+            f"{model_name.replace('_',' ').title()} Precision-Recall Curve",
+            fontweight="bold"
+        )
+
+        if save_plots:
+
+            fig.savefig(
+                os.path.join(
+                    save_dir,
+                    f"{model_name}_precision_recall_curve.png"
+                ),
+                dpi=600,
+                bbox_inches="tight"
+            )
+
+        plt.show()
+        plt.close(fig)
+
+    except:
+        pass
+
+    return predictions
+
+
 # ==========================================================
 # REGRESSION METRICS
 # ==========================================================
@@ -302,4 +378,11 @@ def regression_metrics(
         plt.show()
         plt.close(fig)
 
-    return predictions
+    return {
+    "predictions": predictions,
+    "accuracy": accuracy,
+    "precision": precision,
+    "recall": recall,
+    "f1": f1,
+    "roc_auc": roc_auc
+    }

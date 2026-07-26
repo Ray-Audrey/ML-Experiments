@@ -1,0 +1,750 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{longtable}
+
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+
+\pagestyle{fancy}
+\setlength{\headheight}{15pt}
+\fancyhf{}
+\lhead{ICS1512}
+\rhead{Machine Learning Algorithms Laboratory}
+\cfoot{\thepage}
+
+\lstset{
+	language=Python,
+	basicstyle=\ttfamily\small,
+	numbers=left,
+	frame=single,
+	breaklines=true,
+	showstringspaces=false
+}
+
+\begin{document}
+	
+	\begin{tabular}{|p{4cm}|p{11cm}|}
+		\hline
+		
+		Experiment No. & 2 \\ \hline
+		
+		Experiment Title & Email Spam/Ham Classification using Na\"ive Bayes and K-Nearest Neighbors Algorithms \\ \hline 
+		GitHub Repository & \url{https://github.com/Ray-Audrey/ML-Experiments} \\ \hline 
+		Student Name & Harshita S \\ \hline
+		
+		Register Number & 3122247001020 \\ \hline
+		
+		Faculty & Dr. Poreddy Ajay Kumar Reddy \\ \hline
+		
+		Submission Date & 27/07/2026 \\ \hline
+		
+	\end{tabular}
+	\\
+	
+	\section{Objective}
+	
+	The objective of this experiment is to develop machine learning models for classifying email messages as either spam or non-spam using the Spambase dataset. The experiment aims to implement and compare different variants of the Na\"ive Bayes classifier, namely Gaussian Na\"ive Bayes, Multinomial Na\"ive Bayes, and Bernoulli Na\"ive Bayes, along with the K-Nearest Neighbors (KNN) classifier. The models are evaluated using standard classification metrics, cross-validation, hyperparameter tuning, and computational time analysis.
+	
+	\section{Problem Statement}
+	
+	Electronic mail has become one of the most widely used communication platforms, making it a frequent target for unsolicited spam messages. Spam emails consume storage space, waste network resources, and may contain phishing attacks or malicious software. Therefore, automatic spam detection is an important application of machine learning.
+	
+	In this experiment, the Spambase dataset is used to build supervised classification models capable of distinguishing spam emails from legitimate emails. The dataset undergoes exploratory data analysis and preprocessing before training multiple machine learning algorithms. The performance of Gaussian Na\"ive Bayes, Multinomial Na\"ive Bayes, Bernoulli Na\"ive Bayes, and K-Nearest Neighbors is evaluated and compared using classification metrics, confusion matrices, ROC curves, precision-recall curves, cross-validation, and hyperparameter optimization techniques.
+	
+	\section{Dataset Description}
+	
+	\begin{longtable}{|p{6cm}|p{8cm}|}
+		\hline
+		
+		Dataset Name & Spambase Dataset \\ \hline
+		
+		Dataset Source & UCI Machine Learning Repository \\ \hline
+		
+		Number of Samples & 4601 \\ \hline
+		
+		Number of Features & 57 \\ \hline
+		
+		Target Variable & Class (Spam / Non-Spam) \\ \hline
+		
+		Number of Classes & 2 \\ \hline
+		
+		Missing Values & 0 \\ \hline
+		
+		Duplicate Samples & 391 \\ \hline
+		
+		Train-Test Split & 80\% Training, 20\% Testing \\ \hline
+		
+		Feature Selection Method & ANOVA (SelectKBest) \\ \hline
+		
+		Scaling & StandardScaler (for Gaussian NB and KNN only) \\ \hline
+		
+	\end{longtable}
+	
+	\section{Exploratory Data Analysis}
+	
+	The Spambase dataset was analyzed using a reusable Exploratory Data Analysis (EDA) function developed in Python. A consolidated EDA summary figure containing twelve subplots was generated to visualize different aspects of the dataset. These visualizations include dataset overview, descriptive statistics, missing value analysis, duplicate record analysis, class distribution, feature distributions, boxplots, pairwise relationships, correlation matrix, and distribution of important numerical attributes.
+	
+	The EDA process provides valuable insights into the characteristics of the dataset before model training. It helps identify data quality issues, understand feature distributions, observe class imbalance, and determine whether preprocessing techniques such as scaling or encoding are required.
+	
+	\begin{itemize}
+		
+		\item Dataset overview
+		
+		\item Statistical summary
+		
+		\item Missing value analysis
+		
+		\item Duplicate record analysis
+		
+		\item Class distribution
+		
+		\item Correlation matrix
+		
+		\item Feature distribution
+		
+	\end{itemize}
+	
+	\subsection*{EDA Summary Figure}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{figures/spambase_eda.pdf}
+		\caption{Comprehensive Exploratory Data Analysis (EDA) of the Spambase Dataset}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The exploratory data analysis shows that the Spambase dataset contains 4,601 email instances described using 57 numerical features representing word frequencies, character frequencies, and capital letter statistics. No missing values are present in the dataset, indicating that no data imputation is required before model training. Although 391 duplicate records exist, the dataset remains sufficiently large for reliable model development after duplicate removal. The class distribution indicates the presence of both spam and non-spam emails, making the dataset suitable for binary classification. The correlation analysis further reveals that several word-frequency features exhibit meaningful relationships with the target variable, suggesting their usefulness for spam detection.
+	
+	\section{Data Preprocessing}
+	
+	The Spambase dataset was prepared for machine learning using a sequence of preprocessing operations implemented through reusable Python functions.
+	
+	\begin{itemize}
+		
+		\item \textbf{Duplicate Removal:}
+		
+		The dataset was examined for duplicate records. A total of 391 duplicate samples were identified and removed to eliminate redundant observations and improve model generalization.
+		
+		\item \textbf{Missing Value Analysis:}
+		
+		Every feature was inspected for missing values. Since the dataset contains no missing values, no imputation techniques were required.
+		
+		\item \textbf{Encoding:}
+		
+		All predictor variables and the target variable are already represented using numerical values. Consequently, no additional categorical encoding was necessary.
+		
+		\item \textbf{Feature Scaling:}
+		
+		Standardization using the StandardScaler technique was applied before training Gaussian Na\"ive Bayes and K-Nearest Neighbors. Scaling transforms each feature to have zero mean and unit variance, which improves the performance of distance-based classifiers such as KNN. Multinomial Na\"ive Bayes and Bernoulli Na\"ive Bayes were trained using the original non-scaled feature values because these algorithms require non-negative input data.
+		
+		\item \textbf{Train-Test Split:}
+		
+		The processed dataset was divided into training and testing subsets using an 80:20 split. Stratified sampling was employed to preserve the original class distribution in both the training and testing datasets.
+		
+		\item \textbf{Feature Selection:}
+		
+		ANOVA-based SelectKBest feature selection was performed to evaluate feature relevance. Since every feature contributes meaningful information for spam detection, all available features were retained by setting $k=\text{all}$.
+		
+	\end{itemize}
+	
+
+	\section{Machine Learning Algorithms}
+	
+	Four supervised classification algorithms were implemented for email spam detection. Their performance was compared using multiple evaluation metrics, cross-validation, and execution time analysis.
+	
+	\subsection{Gaussian Naive Bayes}
+	
+	Gaussian Naive Bayes assumes that each feature follows a Gaussian (normal) distribution and that all features are conditionally independent given the class label. Although the Spambase dataset contains frequency-based features that are not perfectly Gaussian, this classifier serves as a useful probabilistic baseline.
+	
+	\textbf{Mathematical Formulation}
+	
+	For a feature vector $X=(x_1,x_2,\ldots,x_n)$, the posterior probability is computed as
+	
+	\[
+	P(C|X)=
+	\frac{P(C)\prod_{i=1}^{n}P(x_i|C)}
+	{P(X)}
+	\]
+	
+	where
+	
+	\[
+	P(x_i|C)=
+	\frac{1}{\sqrt{2\pi\sigma^2}}
+	\exp
+	\left(
+	-\frac{(x_i-\mu)^2}{2\sigma^2}
+	\right)
+	\]
+	
+	The class with the highest posterior probability is selected.
+	
+	\textbf{Advantages}
+	
+	\begin{itemize}
+		\item Very fast training and prediction.
+		\item Performs well even with high-dimensional data.
+		\item Simple probabilistic interpretation.
+	\end{itemize}
+	
+	\textbf{Limitations}
+	
+	\begin{itemize}
+		\item Assumes Gaussian distribution for every feature.
+		\item Independence assumption is often unrealistic.
+		\item Sensitive to feature distributions that deviate significantly from normality.
+	\end{itemize}
+	
+	\subsection{Multinomial Naive Bayes}
+	
+	Multinomial Naive Bayes is specifically designed for count or frequency-based data such as text classification. It models the occurrence frequencies of words and is widely used for spam filtering.
+	
+	\textbf{Mathematical Formulation}
+	
+	For class $C$,
+	
+	\[
+	P(C|X)
+	\propto
+	P(C)
+	\prod_{i=1}^{n}
+	P(x_i|C)^{x_i}
+	\]
+	
+	where
+	
+	\begin{itemize}
+		\item $P(C)$ is the prior probability of class $C$.
+		\item $P(x_i|C)$ is the probability of observing feature $i$ in class $C$.
+	\end{itemize}
+	
+	The classifier predicts the class having the maximum posterior probability.
+	
+	\textbf{Advantages}
+	
+	\begin{itemize}
+		\item Well suited for word-frequency based datasets.
+		\item Computationally efficient.
+		\item Performs well for many text classification problems.
+	\end{itemize}
+	
+	\textbf{Limitations}
+	
+	\begin{itemize}
+		\item Requires non-negative feature values.
+		\item Performance decreases when feature independence assumption is violated.
+	\end{itemize}
+	
+	\subsection{Bernoulli Naive Bayes}
+	
+	Bernoulli Naive Bayes models binary-valued features that indicate the presence or absence of attributes. Although the original Spambase features are continuous frequencies, Bernoulli Naive Bayes internally binarizes the values based on a threshold.
+	
+	\textbf{Mathematical Formulation}
+	
+	The likelihood for each feature is
+	
+	\[
+	P(x_i|C)=
+	P_i^{x_i}
+	(1-P_i)^{1-x_i}
+	\]
+	
+	where
+	
+	\begin{itemize}
+		\item $x_i \in \{0,1\}$.
+		\item $P_i$ represents the probability that feature $i$ is present for class $C$.
+	\end{itemize}
+	
+	The posterior probability is computed using Bayes' theorem and the class with the highest probability is selected.
+	
+	\textbf{Advantages}
+	
+	\begin{itemize}
+		\item Suitable for binary text features.
+		\item Robust for sparse datasets.
+		\item Simple and computationally efficient.
+	\end{itemize}
+	
+	\textbf{Limitations}
+	
+	\begin{itemize}
+		\item Ignores feature frequency information.
+		\item Less suitable when feature counts contain significant information.
+	\end{itemize}
+	
+	\subsection{K-Nearest Neighbors (KNN)}
+	
+	K-Nearest Neighbors is a non-parametric supervised learning algorithm that classifies a new sample according to the majority class among its nearest neighboring training samples. Since KNN relies on distance calculations, feature standardization was performed before training.
+	
+	\textbf{Mathematical Formulation}
+	
+	The Euclidean distance between two samples is
+	
+	\[
+	d(x,y)
+	=
+	\sqrt{
+		\sum_{i=1}^{n}
+		(x_i-y_i)^2
+	}
+	\]
+	
+	The predicted class is determined by majority voting among the $k$ nearest neighbors.
+	
+	\textbf{Advantages}
+	
+	\begin{itemize}
+		\item Easy to understand and implement.
+		\item No explicit model training is required.
+		\item Effective when similar samples belong to the same class.
+	\end{itemize}
+	
+	\textbf{Limitations}
+	
+	\begin{itemize}
+		\item Prediction becomes slower for large datasets.
+		\item Sensitive to irrelevant features and feature scaling.
+		\item Choosing an appropriate value of $k$ is important.
+	\end{itemize}
+	
+	\section{Experimental Setup}
+	
+	The experiment was implemented in Python using reusable machine learning modules developed during the laboratory sessions. The implementation follows the prescribed Anaconda environment and employs Scikit-Learn for model training, hyperparameter tuning, and evaluation.
+	
+	\begin{table}[H]
+		\centering
+		\caption{Experimental Setup}
+		\begin{tabular}{ll}
+			\toprule
+			Component & Specification\\
+			\midrule
+			Python Version & Python 3.12\\
+			Scikit-Learn Version & 1.9.0\\
+			IDE & Jupyter Notebook\\
+			Operating System & Ubuntu/Linux (Anaconda Environment)\\
+			Processor & Intel(R) Core(TM) i7-10610U CPU @ 1.80 GHz\\
+			Memory & 16 GB RAM\\
+			System Type & 64-bit Operating System, x64-based Processor\\
+			Dataset & Spambase\\
+			Training Samples & 3,759\\
+			Testing Samples & 842\\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\section{Hyperparameter Selection}
+	
+	Different hyperparameters were selected according to the characteristics of each classification algorithm. Grid Search and Randomized Search were additionally performed to identify the optimal KNN configuration.
+	
+	\begin{table}[H]
+		\centering
+		\caption{Model Hyperparameters}
+		\begin{tabular}{ll}
+			\toprule
+			Parameter & Value\\
+			\midrule
+			GaussianNB & Default Parameters\\
+			MultinomialNB & Default Parameters\\
+			BernoulliNB & Default Parameters\\
+			Feature Scaling & StandardScaler (GaussianNB and KNN)\\
+			Feature Selection & ANOVA (SelectKBest)\\
+			Selected Features & All Features ($k=all$)\\
+			KNN ($k$) & 5\\
+			Distance Metric & Euclidean\\
+			GridSearchCV & 5-fold Cross Validation\\
+			RandomizedSearchCV & 10 Iterations\\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	Grid Search evaluated combinations of different values of $k$, distance metrics, weighting strategies, and search algorithms. The best configuration obtained was:
+	
+	\begin{itemize}
+		\item Algorithm: Auto
+		\item Distance Metric: Manhattan
+		\item Number of Neighbors: 11
+		\item Weight Function: Distance
+		\item Cross Validation Accuracy: 91.12\%
+	\end{itemize}
+	
+	Randomized Search explored a subset of the hyperparameter space and identified the following configuration:
+	
+	\begin{itemize}
+		\item Algorithm: Ball Tree
+		\item Distance Metric: Manhattan
+		\item Number of Neighbors: 3
+		\item Weight Function: Uniform
+		\item Cross Validation Accuracy: 90.14\%
+	\end{itemize}
+	\section{Results}
+	
+	The performance of the four classifiers was evaluated using Accuracy, Precision, Recall, F1-score, and ROC--AUC. The results obtained on the testing dataset are summarized in Table~\ref{tab:performance}.
+	
+	\begin{table}[H]
+		\centering
+		\caption{Performance Comparison of Classification Models}
+		\label{tab:performance}
+		\begin{tabular}{lccccc}
+			\toprule
+			Algorithm & Accuracy & Precision & Recall & F1-score & ROC--AUC\\
+			\midrule
+			Gaussian Naive Bayes & 0.8290 & 0.8616 & 0.8290 & 0.8306 & 0.9471\\
+			Multinomial Naive Bayes & 0.7886 & 0.7869 & 0.7886 & 0.7864 & 0.8342\\
+			Bernoulli Naive Bayes & 0.8943 & 0.8940 & 0.8943 & 0.8940 & 0.9609\\
+			K-Nearest Neighbors & 0.9109 & 0.9111 & 0.9109 & 0.9104 & 0.9548\\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{Inference:}
+	
+	Among all the evaluated classifiers, K-Nearest Neighbors achieved the highest classification accuracy of 91.09\%, followed closely by Bernoulli Naive Bayes with 89.43\%. Multinomial Naive Bayes produced the lowest performance because the Spambase dataset does not completely satisfy its feature assumptions. Gaussian Naive Bayes achieved competitive ROC--AUC despite a comparatively lower classification accuracy. Overall, KNN demonstrated the best balance between precision, recall, and overall classification performance.
+	
+	\subsection{Performance of KNN for Different Values of \textit{k}}
+	
+	The performance of KNN was analyzed for multiple neighborhood sizes.
+	
+	\begin{table}[H]
+		\centering
+		\caption{Performance of KNN for Different Values of $k$}
+		\begin{tabular}{ccccc}
+			\toprule
+			$k$ & Accuracy & Precision & Recall & F1-score\\
+			\midrule
+			1 & 0.9050 & 0.8832 & 0.8780 & 0.8806\\
+			3 & 0.9026 & 0.8944 & 0.8571 & 0.8754\\
+			5 & \textbf{0.9109} & 0.9143 & 0.8571 & \textbf{0.8848}\\
+			7 & 0.9086 & 0.9164 & 0.8482 & 0.8810\\
+			9 & 0.9026 & 0.9178 & 0.8304 & 0.8719\\
+			11 & 0.9014 & 0.9121 & 0.8333 & 0.8709\\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{Inference:}
+	
+	The classifier performed consistently across different neighborhood sizes. The highest testing accuracy was obtained for $k=5$, which was therefore selected as the default KNN configuration. Increasing the value of $k$ beyond five slightly reduced recall while maintaining similar precision values. This indicates that moderate neighborhood sizes provide a good trade-off between bias and variance.
+	
+	\subsection{GridSearchCV Results}
+	
+	Grid Search was used to evaluate all combinations of selected hyperparameters for KNN.
+	
+	\begin{table}[H]
+		\centering
+		\caption{Best Hyperparameters Obtained Using GridSearchCV}
+		\begin{tabular}{ll}
+			\toprule
+			Parameter & Best Value\\
+			\midrule
+			Algorithm & Auto\\
+			Distance Metric & Manhattan\\
+			Number of Neighbors & 11\\
+			Weight Function & Distance\\
+			Cross Validation Accuracy & 0.9112\\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{Inference:}
+	
+	Grid Search evaluated every possible hyperparameter combination within the specified search space. The best configuration employed Manhattan distance with distance-weighted voting and eleven nearest neighbors. This configuration achieved the highest average cross-validation accuracy of 91.12\%, indicating good generalization capability.
+	
+	\subsection{RandomizedSearchCV Results}
+	
+	Randomized Search was also performed to identify suitable hyperparameter combinations with lower computational cost.
+	
+	\begin{table}[H]
+		\centering
+		\caption{Best Hyperparameters Obtained Using RandomizedSearchCV}
+		\begin{tabular}{ll}
+			\toprule
+			Parameter & Best Value\\
+			\midrule
+			Algorithm & Ball Tree\\
+			Distance Metric & Manhattan\\
+			Number of Neighbors & 3\\
+			Weight Function & Uniform\\
+			Cross Validation Accuracy & 0.9014\\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{Inference:}
+	
+	Randomized Search explored only a subset of all possible combinations. Although it required significantly fewer evaluations than Grid Search, the obtained accuracy was slightly lower. The results demonstrate that Randomized Search provides a good compromise between computational efficiency and predictive performance.
+	
+	\subsection{KD-Tree and Ball-Tree Comparison}
+	
+	The two nearest-neighbor search structures supported by Scikit-Learn were compared.
+	
+	\begin{table}[H]
+		\centering
+		\caption{KD-Tree and Ball-Tree Performance Comparison}
+		\begin{tabular}{lccc}
+			\toprule
+			Algorithm & Accuracy & Training Time (s) & Prediction Time (s)\\
+			\midrule
+			KD-Tree & 0.9109 & 0.0302 & 0.2464\\
+			Ball-Tree & 0.9109 & 0.0165 & 0.3901\\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{Inference:}
+	
+	Both search structures achieved identical classification accuracy. Ball-Tree required less training time, whereas KD-Tree provided faster prediction performance on the testing dataset. The results indicate that the choice between the two search structures mainly affects computational efficiency rather than predictive accuracy.\\
+	
+	\subsection{Cross Validation Results}
+	
+	Five-fold cross validation was performed to evaluate model generalization.
+	
+	\begin{table}[H]
+		\centering
+		\caption{Five-Fold Cross Validation Accuracy}
+		\begin{tabular}{lcc}
+			\toprule
+			Fold & Gaussian NB & Best KNN\\
+			\midrule
+			1 & 0.8131 & 0.8902\\
+			2 & 0.8383 & 0.8961\\
+			3 & 0.8368 & 0.9021\\
+			4 & 0.8247 & 0.9123\\
+			5 & 0.8009 & 0.9004\\
+			\midrule
+			Average & 0.8227 & 0.9002\\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\vspace{0.3cm}
+	\vspace{0.3cm}
+	
+	\textbf{Inference:}
+	
+	KNN consistently outperformed Gaussian Naive Bayes across all five folds. The small variation in fold-wise accuracy indicates stable model performance and good generalization capability. Cross-validation confirms that KNN remains the best-performing classifier for the Spambase dataset.
+	
+	\subsection{Training and Prediction Time Comparison}
+	
+	The computational efficiency of all classifiers was evaluated by measuring training and prediction times.
+	
+	\begin{table}[H]
+		\centering
+		\caption{Training and Prediction Time Comparison}
+		\begin{tabular}{lcc}
+			\toprule
+			Algorithm & Training Time (s) & Prediction Time (s)\\
+			\midrule
+			Gaussian Naive Bayes & 0.0105 & 0.0018\\
+			Multinomial Naive Bayes & 0.0080 & 0.0009\\
+			Bernoulli Naive Bayes & 0.0164 & 0.0027\\
+			K-Nearest Neighbors & 0.0051 & 0.0491\\
+			\bottomrule
+		\end{tabular}
+	\end{table}
+	
+	\textbf{Inference:}
+	
+	KNN required the least training time because it stores the training instances without constructing an explicit model. However, its prediction time was significantly higher than that of the Naive Bayes classifiers due to the computation of distances to neighboring samples during inference. The Naive Bayes classifiers trained quickly and also produced very fast predictions, making them computationally efficient for real-time applications.
+	\section{Result Visualization}
+	
+	The performance of the implemented classifiers was further analyzed using confusion matrices, ROC curves, and Precision--Recall curves. These visualizations provide deeper insight into the classification capability of each model beyond the numerical performance metrics.
+	
+	\subsection{Exploratory Data Analysis}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=\textwidth]{figures/spambase_eda.pdf}
+		\caption{Comprehensive Exploratory Data Analysis of the Spambase Dataset}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The EDA summary shows that the Spambase dataset contains no missing values and consists entirely of numerical attributes. The class distribution indicates a moderate imbalance between spam and non-spam emails. Several word-frequency and character-frequency features exhibit skewed distributions with many zero values. The correlation analysis suggests that only a subset of the features are strongly correlated, making the dataset suitable for machine learning classification.
+	
+	\vspace{0.5cm}
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\subsection{Gaussian Naive Bayes}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/GaussianNB_confusion_matrix.png}
+		\caption{Confusion Matrix of Gaussian Naive Bayes}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	Gaussian Naive Bayes correctly classified the majority of both spam and non-spam emails. However, several legitimate emails were incorrectly classified as spam, increasing the number of false positives. Despite these errors, the classifier maintained good overall performance. The confusion matrix demonstrates that Gaussian Naive Bayes provides a reasonable baseline classifier.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/GaussianNB_roc_curve.png}
+		\caption{ROC Curve of Gaussian Naive Bayes}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The ROC curve lies close to the upper-left corner, producing an ROC--AUC value of approximately 0.95. This indicates excellent discrimination between spam and non-spam emails. The classifier achieves high true-positive rates while maintaining relatively low false-positive rates.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/GaussianNB_precision_recall_curve.png}
+		\caption{Precision--Recall Curve of Gaussian Naive Bayes}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The Precision--Recall curve demonstrates that Gaussian Naive Bayes maintains good precision across a wide range of recall values. The gradual decline in precision at higher recall indicates the expected trade-off between identifying more spam emails and increasing false positives.
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\subsection{Multinomial Naive Bayes}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/MultinomialNB_confusion_matrix.png}
+		\caption{Confusion Matrix of Multinomial Naive Bayes}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	Multinomial Naive Bayes produced a larger number of false negatives compared with the other classifiers. Consequently, several spam emails were classified as legitimate emails. This reduced the recall and overall classification accuracy, indicating that the model assumptions do not perfectly match the feature distribution of the Spambase dataset.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/MultinomialNB_roc_curve.png}
+		\caption{ROC Curve of Multinomial Naive Bayes}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The ROC curve remains above the random classifier line but is farther from the ideal upper-left corner compared to the other models. The ROC--AUC value of approximately 0.83 reflects comparatively weaker discrimination capability between the two classes.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/MultinomialNB_precision_recall_curve.png}
+		\caption{Precision--Recall Curve of Multinomial Naive Bayes}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The Precision--Recall curve shows a noticeable reduction in precision as recall increases. This behavior indicates that the classifier struggles to identify all spam emails while maintaining a low false-positive rate. Overall, it performs less effectively than the remaining classifiers.
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\subsection{Bernoulli Naive Bayes}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/BernoulliNB_confusion_matrix.png}
+		\caption{Confusion Matrix of Bernoulli Naive Bayes}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	Bernoulli Naive Bayes correctly classified most spam and non-spam emails with relatively few classification errors. The confusion matrix indicates balanced performance across both classes. The classifier significantly outperformed Multinomial Naive Bayes on this dataset.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/BernoulliNB_roc_curve.png}
+		\caption{ROC Curve of Bernoulli Naive Bayes}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The ROC curve is positioned very close to the upper-left corner and achieves an ROC--AUC value exceeding 0.96. This demonstrates excellent discrimination capability and confirms that Bernoulli Naive Bayes is highly effective for this binary classification task.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/BernoulliNB_precision_recall_curve.png}
+		\caption{Precision--Recall Curve of Bernoulli Naive Bayes}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The Precision--Recall curve remains consistently high throughout most threshold values. High precision and high recall indicate that the classifier successfully identifies spam emails while minimizing false alarms.
+	
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	
+	\subsection{K-Nearest Neighbors}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/knn_confusion_matrix.png}
+		\caption{Confusion Matrix of K-Nearest Neighbors}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The KNN classifier correctly classified the majority of both spam and non-spam emails, resulting in the highest overall accuracy among all evaluated models. The confusion matrix contains relatively few false positives and false negatives, demonstrating balanced classification performance.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/KNN_roc_curve.png}
+		\caption{ROC Curve of K-Nearest Neighbors}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The ROC curve illustrates excellent separation between the two classes, with an ROC--AUC value of approximately 0.95. The classifier maintains a high true-positive rate while keeping false positives comparatively low across different classification thresholds.
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.65\linewidth]{figures/KNN_precision_recall_curve.png}
+		\caption{Precision--Recall Curve of K-Nearest Neighbors}
+	\end{figure}
+	
+	\textbf{Inference:}
+	
+	The Precision--Recall curve remains consistently high, indicating strong predictive performance over a wide range of thresholds. The classifier achieves an effective balance between precision and recall, making it highly suitable for spam detection where both false positives and false negatives are important.
+	\section{Discussion}
+	
+	This experiment demonstrated the application of probabilistic and instance-based machine learning algorithms for email spam classification using the Spambase dataset. Exploratory Data Analysis confirmed that the dataset is clean, contains no missing values, and consists of numerical word-frequency and character-frequency attributes suitable for supervised learning. Since the dataset contains continuous-valued features with varying scales, feature standardization was applied before training Gaussian Naive Bayes and K-Nearest Neighbors, while the original non-negative feature values were retained for Multinomial and Bernoulli Naive Bayes.
+	
+	Among the evaluated classifiers, K-Nearest Neighbors achieved the highest testing accuracy of 91.09\%, demonstrating superior classification capability on the Spambase dataset. Bernoulli Naive Bayes also performed well with an accuracy of 89.43\%, indicating that binary feature modeling is effective for spam detection. Gaussian Naive Bayes achieved satisfactory performance despite its assumption that features follow Gaussian distributions. Multinomial Naive Bayes produced the lowest classification accuracy because the feature distribution in the Spambase dataset does not completely satisfy its underlying assumptions.
+	
+	Hyperparameter tuning using GridSearchCV and RandomizedSearchCV further improved the understanding of KNN behavior. Grid Search identified Manhattan distance with distance-weighted voting and eleven neighbors as the best configuration during cross-validation, whereas Randomized Search obtained a competitive solution with fewer parameter evaluations. Five-fold cross validation demonstrated that KNN consistently outperformed Gaussian Naive Bayes across all folds, confirming its strong generalization ability.
+	
+	The execution time analysis highlighted the computational trade-offs among the classifiers. KNN required minimal training time because it stores the training instances directly without constructing an explicit model. However, it incurred the highest prediction time since distance calculations must be performed for every testing sample. In contrast, the Naive Bayes classifiers trained rapidly and produced extremely fast predictions, making them attractive for real-time email filtering applications.
+	
+	Overall, the experiment illustrates the importance of selecting an appropriate classifier based on both predictive performance and computational efficiency. While KNN achieved the best classification accuracy, the Naive Bayes classifiers provide faster inference and lower computational overhead. The reusable implementation developed during this experiment can be extended to larger email datasets and other binary text classification problems.
+	
+	\section{Conclusion}
+	
+	This experiment successfully implemented and compared four supervised classification algorithms for email spam detection using the Spambase dataset. The complete machine learning workflow included dataset exploration, preprocessing, feature selection, model training, hyperparameter tuning, cross-validation, performance evaluation, and visualization.
+	
+	The comparative study showed that K-Nearest Neighbors achieved the highest classification accuracy of 91.09\%, followed by Bernoulli Naive Bayes with an accuracy of 89.43\%. Gaussian Naive Bayes provided competitive ROC--AUC performance, whereas Multinomial Naive Bayes achieved comparatively lower accuracy because of the characteristics of the dataset. Hyperparameter tuning using GridSearchCV and RandomizedSearchCV demonstrated the importance of selecting suitable neighborhood size, distance metric, and weighting strategy for KNN.
+	
+	Cross-validation confirmed that KNN generalized consistently across different training folds. The execution time analysis also revealed that although KNN requires very little training time, its prediction time is higher than that of the Naive Bayes classifiers. Consequently, the choice of classifier depends on the balance between predictive accuracy and computational efficiency required by the application.
+	
+	Overall, the experiment provided practical experience in implementing reusable machine learning modules for classification tasks and reinforced the significance of preprocessing, model selection, hyperparameter optimization, and comprehensive performance evaluation in developing reliable spam detection systems.
+	
+	\section{References}
+	
+	\begin{enumerate}
+		
+		\item Scikit-learn Developers, \emph{Scikit-learn Documentation}. Available: \url{https://scikit-learn.org/stable/}
+		
+		\item Dua, D., and Graff, C., \emph{UCI Machine Learning Repository: Spambase Data Set}. Available: \url{https://archive.ics.uci.edu/ml/datasets/spambase}
+		
+		\item Géron, A., \emph{Hands-On Machine Learning with Scikit-Learn, Keras \& TensorFlow}, 3rd ed., O'Reilly Media, 2023.
+		
+		\item Mitchell, T. M., \emph{Machine Learning}. McGraw-Hill Education, 1997.
+		
+		\item Bishop, C. M., \emph{Pattern Recognition and Machine Learning}. Springer, 2006.
+		
+	\end{enumerate}
+	
+\end{document}

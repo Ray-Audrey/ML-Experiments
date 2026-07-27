@@ -1,0 +1,1743 @@
+\documentclass[15pt,a4paper]{extarticle}
+
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+
+\usepackage[a4paper,margin=1in]{geometry}
+
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage{anyfontsize}
+\usepackage{graphicx}
+\usepackage{float}
+
+\usepackage{amsmath}
+\usepackage{enumitem}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\usepackage{setspace}
+\onehalfspacing
+
+\usepackage[hidelinks]{hyperref}
+
+
+% ---------------- Document ----------------
+
+\begin{document}
+
+
+\begin{center}
+\textbf{\Large Machine Learning Algorithms Laboratory}
+\end{center}
+
+
+\vspace{1cm}
+
+
+\begin{tabular}{|p{4cm}|p{11cm}|}
+
+\hline
+
+Experiment No. & 3 \\
+
+\hline
+
+Experiment Title &
+Regression Analysis using Linear and Regularized Models \\
+
+\hline
+
+GitHub Repository &
+\url{https://github.com/Ray-Audrey/ML-Experiments} \\
+
+\hline
+
+Student Name & Harshita S \\
+
+\hline
+
+Register Number & 3122247001020 \\
+
+\hline
+
+Faculty &
+Dr. Poreddy Ajay Kumar Reddy \\
+
+\hline
+
+Submission Date & 27/07/2026 \\
+
+\hline
+
+\end{tabular}
+
+
+
+\section{Objective}
+
+The objective of this experiment is to implement and analyze regression
+models for predicting loan sanction amounts using Linear Regression and
+regularization-based regression techniques.
+
+
+
+The following regression algorithms are implemented and compared:
+
+\begin{itemize}
+    \item Linear Regression
+    \item Ridge Regression
+    \item Lasso Regression
+    \item Elastic Net Regression
+\end{itemize}
+
+The experiment also focuses on:
+
+\begin{itemize}
+    \item Performing exploratory data analysis.
+    \item Handling missing values and categorical features.
+    \item Applying feature scaling and encoding techniques.
+    \item Performing hyperparameter tuning using GridSearchCV.
+    \item Comparing models using regression evaluation metrics.
+    \item Studying the effect of regularization on model coefficients.
+\end{itemize}
+
+
+
+\section{Problem Statement}
+
+Loan approval systems require accurate prediction of the sanctioned loan
+amount based on customer information, financial status, credit history,
+and property details.
+
+The objective of this experiment is to develop machine learning regression
+models that can predict the loan sanction amount for a customer.
+
+\textbf{Input:}
+
+The input consists of customer-related features including:
+
+\begin{itemize}
+    \item Age
+    \item Income
+    \item Credit Score
+    \item Loan Amount Request
+    \item Property Price
+    \item Employment details
+    \item Property information
+\end{itemize}
+
+
+\textbf{Output:}
+
+The output variable is:
+
+\begin{center}
+\textbf{Loan Sanction Amount (USD)}
+\end{center}
+
+
+The performance of different regression models is evaluated using:
+
+\begin{itemize}
+    \item Mean Absolute Error (MAE)
+    \item Mean Squared Error (MSE)
+    \item Root Mean Squared Error (RMSE)
+    \item R$^2$ Score
+\end{itemize}
+
+
+
+
+\section{Dataset Description}
+
+
+The dataset contains customer financial information used for predicting
+loan sanction amounts.
+
+
+\begin{longtable}{|p{6cm}|p{8cm}|}
+
+\hline
+\textbf{Dataset Attribute} & 
+\textbf{Description}
+\\
+\hline
+\endfirsthead
+
+
+\hline
+\textbf{Dataset Attribute} & 
+\textbf{Description}
+\\
+\hline
+\endhead
+
+
+Dataset Name &
+Loan Prediction Dataset
+\\
+\hline
+
+Dataset Source &
+Kaggle Loan Amount Prediction Dataset
+\url{https://www.kaggle.com/datasets/phileinsophos/predict-loan-amount-data}
+\\
+\\
+\hline
+
+Number of Samples &
+30000 samples
+\\
+\hline
+
+Number of Features &
+23 input features and 1 target variable
+\\
+\hline
+
+Target Variable &
+Loan Sanction Amount (USD)
+\\
+\hline
+
+Regression Type &
+Continuous value prediction
+\\
+\hline
+
+Missing Values &
+Present in numerical and categorical attributes
+\\
+\hline
+
+Train-Test Split &
+80\% Training and 20\% Testing
+\\
+\hline
+
+Training Samples &
+23457 samples
+\\
+\hline
+
+Testing Samples &
+5865 samples
+\\
+\hline
+
+\end{longtable}
+
+The dataset contains numerical and categorical attributes.
+
+Numerical features include:
+
+\begin{itemize}
+\item Age
+\item Income
+\item Loan Amount Request
+\item Credit Score
+\item Property Price
+\item Property Age
+\end{itemize}
+
+
+Categorical features include:
+
+\begin{itemize}
+\item Gender
+\item Profession
+\item Employment Type
+\item Location
+\item Credit Card Status
+\item Property Location
+\end{itemize}
+\section{Exploratory Data Analysis}
+
+Exploratory Data Analysis (EDA) was performed to understand the structure,
+distribution, relationships, and quality of the dataset before model
+training.
+
+The following analysis was carried out:
+
+\begin{itemize}
+    \item Dataset shape and statistical summary.
+    \item Missing value analysis.
+    \item Duplicate record detection.
+    \item Target variable distribution analysis.
+    \item Feature-target relationship analysis.
+    \item Correlation analysis between numerical features.
+\end{itemize}
+
+
+
+\subsection{Dataset Overview}
+
+
+The dataset contains 30000 customer records with 24 attributes.
+Among these, 23 attributes are used as input features and
+Loan Sanction Amount (USD) is considered as the target variable.
+
+
+The dataset contains both numerical and categorical attributes.
+Missing values were observed in several columns such as:
+
+\begin{itemize}
+
+\item Income (USD)
+\item Income Stability
+\item Type of Employment
+\item Credit Score
+\item Property Age
+\item Loan Sanction Amount (USD)
+
+\end{itemize}
+
+
+No duplicate records were present in the dataset.
+
+
+
+\subsection{EDA Summary Visualization}
+
+
+A consolidated EDA figure containing multiple subplots was generated to
+analyze the dataset characteristics.
+
+
+The figure contains:
+
+\begin{enumerate}
+
+\item Target variable distribution
+\item Age distribution
+\item Income distribution
+\item Credit score distribution
+\item Loan request distribution
+\item Property price distribution
+\item Missing value analysis
+\item Feature correlation heatmap
+\item Loan amount request vs target
+\item Property price vs target
+\item Credit score vs target
+\item Income vs target
+
+\end{enumerate}
+
+
+
+\begin{figure}[H]
+
+\centering
+
+\includegraphics[
+width=\linewidth
+]{../figures/exp3_eda_summary.png}
+
+\caption{
+Consolidated Exploratory Data Analysis Visualization
+}
+
+\end{figure}
+
+
+
+\textbf{Inference:}
+
+The EDA visualization provides an overview of the dataset distribution and
+feature relationships. The target variable Loan Sanction Amount shows a
+wide range of values with some variation. Loan Amount Request and Property
+Price show strong positive relationships with the target variable.
+Credit Score also shows a positive correlation indicating its importance
+in loan sanction prediction. Missing value analysis highlights the need
+for proper preprocessing before model training.
+
+
+
+
+\subsection{Correlation Analysis}
+
+
+The correlation matrix was generated using numerical features to identify
+relationships between variables.
+
+
+The highest correlations with the target variable were:
+
+\begin{table}[H]
+
+\centering
+
+\begin{tabular}{lc}
+
+\toprule
+
+Feature & Correlation with Target \\
+
+\midrule
+
+Loan Amount Request (USD) & 0.7264 \\
+
+Property Price & 0.6871 \\
+
+Current Loan Expenses (USD) & 0.4851 \\
+
+Credit Score & 0.3694 \\
+
+Income (USD) & 0.0381 \\
+
+\bottomrule
+
+\end{tabular}
+
+
+\caption{
+Correlation of Features with Loan Sanction Amount
+}
+
+\end{table}
+
+
+
+\textbf{Inference:}
+
+Loan Amount Request and Property Price have the strongest influence on the
+loan sanction amount. Credit Score also contributes significantly because
+customers with better credit history generally receive higher sanctioned
+amounts. Other attributes such as Age and Dependents show weaker linear
+relationships with the target.
+
+
+
+
+
+
+\section{Data Preprocessing}
+
+
+Data preprocessing was performed to convert the raw dataset into a suitable
+format for regression algorithms.
+
+
+
+\subsection{Removal of Unnecessary Attributes}
+
+
+The following columns were removed because they do not contribute meaningful
+information for prediction:
+
+
+\begin{itemize}
+
+\item Customer ID
+
+\item Name
+
+\item Property ID
+
+\end{itemize}
+
+
+
+
+\subsection{Missing Value Handling}
+
+
+Missing values were handled using suitable imputation techniques.
+
+
+For numerical features:
+
+\begin{itemize}
+
+\item Missing values were replaced using mean imputation to reduce
+the effect of outliers.
+
+\end{itemize}
+
+
+
+For categorical features:
+
+\begin{itemize}
+
+\item Missing values were replaced using the most frequent category.
+
+\end{itemize}
+
+
+
+
+\subsection{Handling Missing Symbols}
+
+
+The following symbols representing missing data were replaced with NaN:
+
+
+\begin{itemize}
+
+\item ?
+\item -999
+\item Empty values
+\item NA
+
+\end{itemize}
+
+
+
+
+\subsection{Categorical Feature Encoding}
+
+
+Categorical variables were converted into numerical form using
+One Hot Encoding.
+
+The encoding method creates separate binary features for each category
+while handling unknown categories during testing.
+
+
+
+
+
+
+\subsection{Feature Scaling}
+
+
+Numerical features were standardized using StandardScaler.
+
+
+The transformation is:
+
+
+\[
+X_{scaled} =
+\frac{X-\mu}{\sigma}
+\]
+
+
+where:
+
+\begin{itemize}
+
+\item $\mu$ represents the mean of the feature.
+
+\item $\sigma$ represents the standard deviation.
+
+\end{itemize}
+
+
+Feature scaling improves convergence and ensures that features with larger
+values do not dominate the regression models.
+
+
+
+
+
+\subsection{Train-Test Split}
+
+
+The processed dataset was divided into training and testing sets.
+
+
+\begin{table}[H]
+
+\centering
+
+\begin{tabular}{lc}
+
+\toprule
+
+Dataset & Samples \\
+
+\midrule
+
+Training Data & 23457 \\
+
+Testing Data & 5865 \\
+
+\bottomrule
+
+\end{tabular}
+
+
+\caption{
+Train-Test Dataset Distribution
+}
+
+\end{table}
+
+
+The preprocessing pipeline generated:
+
+\[
+X_{train}=(23457,53)
+\]
+
+\[
+X_{test}=(5865,53)
+\]
+
+
+After preprocessing, the final feature space contained 53 numerical
+features which were used for regression model training.
+
+\section{Machine Learning Algorithm}
+
+
+Regression algorithms are supervised learning techniques used to predict
+continuous numerical values. In this experiment, four regression models
+are implemented and compared:
+
+\begin{itemize}
+
+\item Linear Regression
+
+\item Ridge Regression
+
+\item Lasso Regression
+
+\item Elastic Net Regression
+
+\end{itemize}
+
+
+
+
+
+\subsection{Linear Regression}
+
+
+Linear Regression models the relationship between input features and the
+target variable by fitting a linear equation.
+
+
+The mathematical representation is:
+
+
+\[
+y = \beta_0+\beta_1x_1+\beta_2x_2+...+\beta_nx_n
+\]
+
+
+where:
+
+\begin{itemize}
+
+\item $y$ represents the predicted loan sanction amount.
+
+\item $x_1,x_2,...,x_n$ represent input features.
+
+\item $\beta_0$ represents the intercept.
+
+\item $\beta_1,\beta_2,...,\beta_n$ represent feature coefficients.
+
+\end{itemize}
+
+
+
+The objective of Linear Regression is to minimize the residual sum of
+squares:
+
+
+\[
+RSS=\sum_{i=1}^{n}(y_i-\hat{y_i})^2
+\]
+
+
+where $y_i$ is the actual value and $\hat{y_i}$ is the predicted value.
+
+
+
+
+\textbf{Advantages}
+
+\begin{itemize}
+
+\item Simple and easy to interpret.
+
+\item Computationally efficient.
+
+\item Works well when relationships are approximately linear.
+
+\end{itemize}
+
+
+
+\textbf{Limitations}
+
+\begin{itemize}
+
+\item Sensitive to outliers.
+
+\item Performs poorly with highly correlated features.
+
+\item Cannot capture complex nonlinear relationships.
+
+\end{itemize}
+
+
+
+
+
+\subsection{Ridge Regression}
+
+
+Ridge Regression is a regularized version of Linear Regression that reduces
+model complexity by adding an L2 penalty term.
+
+
+The objective function is:
+
+
+\[
+Loss =
+\sum_{i=1}^{n}(y_i-\hat{y_i})^2
++
+\lambda\sum_{j=1}^{m}\beta_j^2
+\]
+
+
+where:
+
+\begin{itemize}
+
+\item $\lambda$ is the regularization parameter.
+
+\item $\beta_j$ represents model coefficients.
+
+\end{itemize}
+
+
+
+Ridge regression reduces large coefficient values and improves model
+generalization.
+
+
+
+\textbf{Advantages}
+
+\begin{itemize}
+
+\item Handles multicollinearity effectively.
+
+\item Reduces overfitting.
+
+\item Maintains all features in the model.
+
+\end{itemize}
+
+
+
+\textbf{Limitations}
+
+\begin{itemize}
+
+\item Does not perform feature selection.
+
+\item Requires selection of suitable regularization parameter.
+
+\end{itemize}
+
+
+
+
+
+\subsection{Lasso Regression}
+
+
+Lasso Regression applies L1 regularization by adding the absolute values of
+coefficients as a penalty term.
+
+
+The objective function is:
+
+
+\[
+Loss =
+\sum_{i=1}^{n}(y_i-\hat{y_i})^2
++
+\lambda\sum_{j=1}^{m}|\beta_j|
+\]
+
+
+The L1 penalty forces some coefficients to become exactly zero, which
+performs automatic feature selection.
+
+
+
+\textbf{Advantages}
+
+\begin{itemize}
+
+\item Performs feature selection.
+
+\item Produces simpler models.
+
+\item Reduces overfitting.
+
+\end{itemize}
+
+
+
+\textbf{Limitations}
+
+\begin{itemize}
+
+\item May remove important features when features are correlated.
+
+\item Sensitive to regularization parameter selection.
+
+\end{itemize}
+
+
+
+
+
+\subsection{Elastic Net Regression}
+
+
+Elastic Net combines both L1 and L2 regularization techniques.
+
+
+The objective function is:
+
+
+\[
+Loss =
+\sum_{i=1}^{n}(y_i-\hat{y_i})^2
++
+\lambda
+\left(
+\alpha\sum|\beta_j|
++
+(1-\alpha)\sum\beta_j^2
+\right)
+\]
+
+
+where:
+
+\begin{itemize}
+
+\item $\alpha$ controls the contribution of L1 regularization.
+
+\item $(1-\alpha)$ controls the contribution of L2 regularization.
+
+\end{itemize}
+
+
+
+Elastic Net provides the benefits of both Ridge and Lasso regression.
+
+
+
+\textbf{Advantages}
+
+\begin{itemize}
+
+\item Handles correlated features better than Lasso.
+
+\item Performs feature selection.
+
+\item Reduces overfitting.
+
+\end{itemize}
+
+
+
+\textbf{Limitations}
+
+\begin{itemize}
+
+\item Requires tuning of multiple hyperparameters.
+
+\item More computationally expensive.
+
+\end{itemize}
+
+
+
+
+
+\section{Model Training}
+
+
+The regression models were trained using the preprocessed training dataset.
+
+
+The implemented models are:
+
+\begin{table}[H]
+
+\centering
+
+\begin{tabular}{lll}
+
+\toprule
+
+Model & Regularization & Parameters \\
+
+\midrule
+
+Linear Regression & None & Default \\
+
+Ridge & L2 & $\alpha=1$ \\
+
+Lasso & L1 & $\alpha=0.1$ \\
+
+Elastic Net & L1 + L2 & $\alpha=0.1,\ l1\_ratio=0.5$ \\
+
+\bottomrule
+
+\end{tabular}
+
+
+\caption{
+Initial Regression Model Parameters
+}
+
+\end{table}
+
+
+
+
+
+\section{Hyperparameter Tuning}
+
+
+GridSearchCV was used to find optimal regularization parameters.
+
+
+A 5-fold cross-validation strategy was used with R$^2$ score as the
+evaluation metric.
+
+
+
+\begin{table}[H]
+
+\centering
+
+\begin{tabular}{lll}
+
+\toprule
+
+Model & Parameter Search Space & Best Parameter \\
+
+\midrule
+
+Ridge & 
+0.01,0.1,1,10,100
+&
+$\alpha=100$
+\\
+
+
+Lasso &
+0.001,0.01,0.1,1,10
+&
+$\alpha=10$
+\\
+
+
+Elastic Net &
+$\alpha$:0.01,0.1,1,10
+&
+$\alpha=0.1$
+\\
+
+
+&
+$l1\_ratio$:0.2,0.5,0.8
+&
+$l1\_ratio=0.8$
+\\
+
+
+\bottomrule
+
+\end{tabular}
+
+
+\caption{
+Hyperparameter Optimization Results
+}
+
+\end{table}
+
+
+
+The best cross-validation scores obtained were:
+
+
+\begin{table}[H]
+
+\centering
+
+\begin{tabular}{lc}
+
+\toprule
+
+Model & Best CV R$^2$ Score \\
+
+\midrule
+
+Ridge & 0.5923 \\
+
+Lasso & 0.5921 \\
+
+Elastic Net & 0.5939 \\
+
+\bottomrule
+
+\end{tabular}
+
+
+\caption{
+Grid Search Cross Validation Performance
+}
+
+\end{table}
+
+\section{Experimental Setup}
+
+
+The experiment was implemented using Python and Scikit-Learn libraries.
+The following software and hardware environment was used:
+
+
+\begin{table}[H]
+
+\centering
+
+\begin{tabular}{ll}
+
+\toprule
+
+Parameter & Details \\
+
+\midrule
+
+Programming Language & Python \\
+
+Machine Learning Library & Scikit-Learn \\
+
+Data Processing Library & Pandas, NumPy \\
+
+Visualization Library & Matplotlib \\
+
+Development Environment & Jupyter Notebook \\
+
+Python Version & Python 3.x (Anaconda Environment) \\
+
+Operating System & Linux (Anaconda Environment) \\
+
+Dataset Size & 30000 samples \\
+
+Processor & Intel based system \\
+
+\bottomrule
+
+\end{tabular}
+
+
+\caption{
+Experimental Environment
+}
+
+\end{table}
+
+
+\subsection*{Reusable Functions}
+
+The implementation was modularized using reusable functions:
+
+\begin{itemize}
+
+\item perform\_regression\_eda() for complete exploratory analysis.
+
+\item preprocess\_data() for preprocessing pipeline generation.
+
+\item train\_regression() for training different regression models.
+
+\item compare\_regression\_models() for calculating regression metrics.
+
+\item tune\_regression\_model() for hyperparameter optimization.
+
+\item compare\_cross\_validation() for model validation.
+
+\end{itemize}
+
+\section{Performance Evaluation}
+
+
+The trained regression models were evaluated using regression performance
+metrics.
+
+
+The following metrics were used:
+
+
+\subsection{Mean Absolute Error (MAE)}
+
+
+MAE measures the average absolute difference between actual and predicted
+values.
+
+
+\[
+MAE=
+\frac{1}{n}
+\sum_{i=1}^{n}
+|y_i-\hat{y_i}|
+\]
+
+
+Lower MAE indicates better prediction accuracy.
+
+
+
+
+\subsection{Mean Squared Error (MSE)}
+
+
+MSE calculates the average squared difference between actual and predicted
+values.
+
+
+\[
+MSE=
+\frac{1}{n}
+\sum_{i=1}^{n}
+(y_i-\hat{y_i})^2
+\]
+
+
+Lower MSE represents better model performance.
+
+
+
+
+\subsection{Root Mean Squared Error (RMSE)}
+
+
+RMSE is the square root of MSE and represents error in the same unit as the
+target variable.
+
+
+\[
+RMSE=\sqrt{MSE}
+\]
+
+
+
+
+\subsection{R\texorpdfstring{$^2$}{2} Score}
+
+
+R$^2$ score represents the proportion of variance explained by the model.
+
+
+\[
+R^2=
+1-
+\frac{
+\sum(y_i-\hat{y_i})^2
+}
+{
+\sum(y_i-\bar y)^2
+}
+\]
+
+
+Higher R$^2$ indicates better model fitting.
+
+
+
+
+
+
+\section{Test Dataset Performance}
+
+
+The performance of all regression models on the test dataset is shown below.
+
+
+\begin{table}[H]
+
+\centering
+
+\begin{tabular}{lrrrr}
+
+\toprule
+
+Model & MAE & MSE & RMSE & R$^2$ Score \\
+
+\midrule
+
+
+Linear Regression &
+20754.89 &
+8.95E8 &
+29917.03 &
+0.6021
+\\
+
+
+Ridge Regression &
+20768.96 &
+8.95E8 &
+29921.56 &
+0.6020
+\\
+
+
+Lasso Regression &
+20737.56 &
+8.94E8 &
+29903.95 &
+0.6024
+\\
+
+
+Elastic Net &
+20871.54 &
+9.00E8 &
+30000.72 &
+0.5999
+\\
+
+
+\bottomrule
+
+\end{tabular}
+
+
+\caption{
+Regression Model Performance on Test Data
+}
+
+\end{table}
+
+
+
+
+
+\textbf{Inference:}
+
+
+All regression models achieved similar performance because the dataset
+contains strong linear relationships between important features and the
+target variable. Lasso Regression obtained the highest R$^2$ score of
+0.6024 and the lowest RMSE among the tested models. Regularization methods
+provided comparable performance to Linear Regression while controlling
+model complexity.
+
+
+
+
+
+\section{Cross Validation Performance}
+
+
+Five-fold cross validation was performed to verify model stability.
+
+
+\begin{table}[H]
+
+\centering
+
+\begin{tabular}{lrrrr}
+
+\toprule
+
+Model & MAE & RMSE & R$^2$ Score \\
+
+\midrule
+
+
+Linear Regression &
+21103.77 &
+30788.17 &
+0.5947
+\\
+
+
+Ridge Regression &
+21108.41 &
+30760.81 &
+0.5954
+\\
+
+
+Lasso Regression &
+21081.06 &
+30750.04 &
+0.5957
+\\
+
+
+Elastic Net &
+21175.97 &
+30777.02 &
+0.5950
+\\
+
+
+\bottomrule
+
+\end{tabular}
+
+
+\caption{
+5-Fold Cross Validation Results
+}
+
+\end{table}
+
+
+
+\textbf{Inference:}
+
+
+The cross-validation results are consistent with the test performance.
+Lasso Regression achieved the highest average validation R$^2$ score of
+0.5957, showing better generalization ability. Ridge and Elastic Net also
+performed consistently, indicating that regularization helped reduce model
+variance.
+
+
+
+
+
+\section{Training and Prediction Time Analysis}
+
+
+The execution time of different regression algorithms was measured.
+
+
+\begin{table}[H]
+
+\centering
+
+\begin{tabular}{lrr}
+
+\toprule
+
+Model & Training Time (seconds) & Prediction Time (seconds) \\
+
+\midrule
+
+
+Linear Regression &
+0.0528 &
+0.0007
+\\
+
+
+Ridge Regression &
+0.0186 &
+0.0017
+\\
+
+
+Lasso Regression &
+0.4259 &
+0.0011
+\\
+
+
+Elastic Net &
+0.8752 &
+0.0008
+\\
+
+
+\bottomrule
+
+\end{tabular}
+
+
+\caption{
+Training and Prediction Time Comparison
+}
+
+\end{table}
+
+
+
+\textbf{Inference:}
+
+
+Ridge Regression required the least training time among all models.
+Elastic Net required the highest training time because it combines both L1
+and L2 regularization. Linear Regression provided the fastest prediction
+time, making it computationally efficient for deployment.
+
+
+
+
+
+\section{Model Selection}
+
+
+Based on the evaluation metrics, Lasso Regression provided the best overall
+performance with:
+
+\begin{itemize}
+
+\item Lowest RMSE: 29903.95
+
+\item Highest Test R$^2$ Score: 0.6024
+
+\item Highest Cross Validation R$^2$ Score: 0.5957
+
+\end{itemize}
+
+
+Therefore, Lasso Regression was selected as the final regression model for
+loan sanction amount prediction.
+
+
+\section{Results}
+
+The performance of Linear Regression, Ridge Regression, Lasso Regression and Elastic Net Regression models were compared using the test dataset.
+
+\begin{table}[H]
+\centering
+\caption{Regression Model Performance Comparison}
+\begin{tabular}{lrrrr}
+\toprule
+Model & MAE & MSE & RMSE & R\textsuperscript{2}\\
+\midrule
+
+Linear Regression &
+20754.88 &
+8.95$\times10^{8}$ &
+29917.03 &
+0.6021 \\
+
+Ridge Regression &
+20768.96 &
+8.95$\times10^{8}$ &
+29921.56 &
+0.6020 \\
+
+Lasso Regression &
+20737.55 &
+8.94$\times10^{8}$ &
+29903.94 &
+0.6024 \\
+
+Elastic Net &
+20871.53 &
+9.00$\times10^{8}$ &
+30000.72 &
+0.5998 \\
+
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\textbf{Inference:}
+
+Lasso Regression achieved the lowest MAE and RMSE among the evaluated models, indicating slightly better prediction accuracy. Linear Regression and Ridge Regression produced comparable performance with approximately 60\% variance explained by the models. Elastic Net provided slightly lower performance due to the combined regularization effect. Overall, regularization helped control model complexity without significantly reducing predictive performance.
+
+
+\section{Cross Validation Results}
+
+Five-fold cross validation was performed to evaluate model stability.
+
+\begin{table}[H]
+\centering
+\caption{Five Fold Cross Validation Performance}
+
+\begin{tabular}{lrrrr}
+\toprule
+Model & MAE & RMSE & R\textsuperscript{2} & Validation Error\\
+\midrule
+
+Linear Regression &
+21103.76 &
+30788.17 &
+0.5946 &
+9.48$\times10^{8}$ \\
+
+Ridge Regression &
+21108.40 &
+30760.80 &
+0.5954 &
+9.46$\times10^{8}$ \\
+
+Lasso Regression &
+21081.06 &
+30750.04 &
+0.5956 &
+9.45$\times10^{8}$ \\
+
+Elastic Net &
+21175.96 &
+30777.01 &
+0.5949 &
+9.47$\times10^{8}$ \\
+
+\bottomrule
+\end{tabular}
+
+\end{table}
+
+
+\textbf{Inference:}
+
+The cross-validation results show that all models produced consistent performance across different training subsets. Lasso Regression obtained the highest average R\textsuperscript{2} score of 0.5956, indicating better generalization. The small difference between training and validation errors indicates that the models did not suffer from severe overfitting.
+
+
+\section{Hyperparameter Tuning Results}
+
+
+GridSearchCV was used for selecting optimal regularization parameters.
+
+
+\begin{table}[H]
+\centering
+
+\caption{Best Hyperparameters}
+
+\begin{tabular}{lll}
+
+\toprule
+
+Model & Parameter & Optimal Value\\
+
+\midrule
+
+Ridge Regression &
+Alpha &
+100 \\
+
+
+Lasso Regression &
+Alpha &
+10 \\
+
+
+Elastic Net &
+Alpha &
+0.1 \\
+
+
+Elastic Net &
+L1 Ratio &
+0.8 \\
+
+\bottomrule
+
+\end{tabular}
+
+\end{table}
+
+
+\textbf{Inference:}
+
+Hyperparameter tuning improved model selection by identifying suitable regularization strengths. Ridge regression selected a higher alpha value, showing that stronger L2 regularization was beneficial. Elastic Net selected a combination of L1 and L2 penalties with an L1 ratio of 0.8, providing a balance between feature selection and coefficient shrinkage.
+
+
+\section{Regression Visualization}
+
+
+\subsection{Actual vs Predicted Plot}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{../figures/model_actual_vs_predicted.png}
+
+\caption{Actual Values vs Predicted Values}
+
+\end{figure}
+
+
+\textbf{Inference:}
+
+The actual versus predicted plot shows the relationship between predicted loan sanction amounts and true values. Points closer to the diagonal line indicate accurate predictions. The model captures the overall trend of loan sanction values but some deviations are observed due to variations in customer financial characteristics.
+
+
+\subsection{Residual Analysis}
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\linewidth]{../figures/model_residual_plot.png}
+
+\caption{Residual Distribution Plot}
+
+\end{figure}
+
+
+\textbf{Inference:}
+
+The residual plot is used to analyze prediction errors. Residuals are distributed around zero, indicating that the model does not show significant systematic bias. Some outliers are present, which may be due to extreme income and property values in the dataset.
+
+
+\section{Model Coefficient Analysis}
+
+
+Regression coefficients were analyzed to understand the contribution of different features.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\linewidth]{../figures/coefficient_comparison.png}
+
+\caption{Coefficient Comparison Between Regression Models}
+
+\end{figure}
+
+
+\textbf{Inference:}
+
+The coefficient comparison shows the effect of regularization on feature weights. Linear Regression produces larger coefficients, while Ridge, Lasso and Elastic Net reduce coefficient magnitude. Lasso performs feature selection by reducing less important feature coefficients towards zero.
+
+
+\section{Execution Time Analysis}
+
+
+\begin{table}[H]
+
+\centering
+
+\caption{Training and Prediction Time Comparison}
+
+\begin{tabular}{lrr}
+
+\toprule
+
+Model &
+Training Time (s) &
+Prediction Time (s)
+
+\\
+
+\midrule
+
+Linear Regression &
+0.0528 &
+0.0007
+\\
+
+Ridge Regression &
+0.0186 &
+0.0016
+\\
+
+Lasso Regression &
+0.4258 &
+0.0011
+\\
+
+Elastic Net &
+0.8752 &
+0.0007
+\\
+
+\bottomrule
+
+\end{tabular}
+
+\end{table}
+
+
+\textbf{Inference:}
+
+Linear Regression and Ridge Regression required less training time compared to Lasso and Elastic Net. Elastic Net required the highest training time due to optimization of both L1 and L2 regularization parameters. Prediction time was very small for all models, making them suitable for real-time prediction applications.
+
+
+\section{Discussion}
+
+The experiment implemented regression models for predicting loan sanction amounts using customer and property-related attributes.
+
+The dataset contained numerical and categorical features with missing values. Missing values were handled using median and mode imputation, while categorical attributes were converted using one-hot encoding. Numerical features were standardized before model training.
+
+Four regression algorithms were compared:
+
+\begin{itemize}
+
+\item Linear Regression provided a strong baseline model.
+
+\item Ridge Regression reduced coefficient magnitude using L2 regularization.
+
+\item Lasso Regression performed feature selection using L1 regularization.
+
+\item Elastic Net combined both L1 and L2 penalties.
+
+\end{itemize}
+
+
+Among all models, Lasso Regression achieved the best test performance with an R\textsuperscript{2} score of 0.6024. The results indicate that loan sanction amount depends mainly on loan request amount, property price, current loan expenses and credit score.
+
+
+\section{Conclusion}
+
+This experiment successfully implemented regression analysis using Linear Regression and regularized regression techniques.
+
+The models were trained and evaluated using multiple performance metrics including MAE, MSE, RMSE and R\textsuperscript{2}. Hyperparameter tuning using GridSearchCV improved the selection of regularized models.
+
+Lasso Regression achieved the best overall performance with the highest R\textsuperscript{2} score and lowest prediction error. The experiment demonstrates that regularization techniques improve model stability and reduce unnecessary feature influence while maintaining predictive accuracy.
+
+\section{References}
+
+\begin{enumerate}
+
+\item C. M. Bishop,
+\textit{Pattern Recognition and Machine Learning},
+Springer, 2006.
+
+\item T. Hastie, R. Tibshirani and J. Friedman,
+\textit{The Elements of Statistical Learning},
+Springer, 2nd Edition, 2009.
+
+\item S. Raschka and V. Mirjalili,
+\textit{Python Machine Learning},
+Packt Publishing, 3rd Edition, 2019.
+
+\item F. Pedregosa et al.,
+"Scikit-learn: Machine Learning in Python,"
+\textit{Journal of Machine Learning Research},
+vol. 12, pp. 2825--2830, 2011.
+
+\item Scikit-learn Documentation,
+\url{https://scikit-learn.org/}
+
+\end{enumerate}
+
+
+\section*{Appendix}
+
+\subsection*{Implementation Details}
+
+The experiment was implemented using Python with reusable modules for:
+
+\begin{itemize}
+
+\item Data preprocessing pipeline
+
+\item Regression model training
+
+\item Hyperparameter optimization
+
+\item Cross validation
+
+\item Performance evaluation
+
+\item Visualization generation
+
+\end{itemize}
+
+
+The implementation followed modular programming practices to improve code
+reusability and maintainability.
+
+\end{document}

@@ -1,3 +1,4 @@
+#classification.py
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
@@ -18,7 +19,14 @@ def train_classification(
     algorithm_type="auto",
     metric="minkowski",
     weights="uniform",
-    random_state=42
+    random_state=42,
+    C=1.0,
+    penalty="l2",
+    solver="lbfgs",
+    max_iter=1000,
+    kernel="rbf",
+    gamma="scale",
+    degree=3
 ):
     """
     Train a classification model.
@@ -33,6 +41,11 @@ def train_classification(
     multinomial_nb
     bernoulli_nb
     svm
+
+    Extra Parameters (Experiment 4)
+    --------------------------------
+    Logistic Regression -> C, penalty, solver, max_iter
+    SVM                  -> C, kernel, gamma, degree
     """
 
     algorithm = algorithm.lower()
@@ -40,8 +53,11 @@ def train_classification(
     if algorithm == "logistic_regression":
 
         model = LogisticRegression(
-            random_state=random_state,
-            max_iter=1000
+            C=C,
+            penalty=penalty,
+            solver=solver,
+            max_iter=max_iter,
+            random_state=random_state
         )
 
     elif algorithm == "decision_tree":
@@ -80,6 +96,10 @@ def train_classification(
     elif algorithm == "svm":
 
         model = SVC(
+            C=C,
+            kernel=kernel,
+            gamma=gamma,
+            degree=degree,
             probability=True,
             random_state=random_state
         )

@@ -1,3 +1,4 @@
+#validation.py
 from sklearn.model_selection import (
     KFold,
     cross_val_score,
@@ -54,7 +55,7 @@ def perform_cross_validation(
     print()
 
     print(
-        "Average R2:",
+        "Average Score:",
         round(
             np.mean(scores),
             4
@@ -184,6 +185,93 @@ def compare_cross_validation(
 
 
 # ==========================================================
+# MULTIPLE CLASSIFICATION MODEL CROSS VALIDATION (Experiment 4)
+# ==========================================================
+
+def compare_classification_cross_validation(
+    models,
+    X,
+    y,
+    folds=5
+):
+    """
+    Runs 5-Fold CV (accuracy) for each classification model.
+
+    Returns
+    -------
+    summary_df  : average accuracy + std dev per model
+    fold_scores : dict {model_name: array of per-fold accuracy}
+                  (useful for the Fold-wise report table / plot)
+    """
+
+    kfold = KFold(
+        n_splits=folds,
+        shuffle=True,
+        random_state=42
+    )
+
+
+    results = []
+
+    fold_scores = {}
+
+
+
+    for name, model in models.items():
+
+
+        scores = cross_val_score(
+
+            model,
+
+            X,
+
+            y,
+
+            cv=kfold,
+
+            scoring="accuracy"
+
+        )
+
+
+        fold_scores[name] = scores
+
+
+        results.append({
+
+            "Model":
+            name,
+
+
+            "Average Accuracy":
+            scores.mean(),
+
+
+            "Std Dev":
+            scores.std()
+
+        })
+
+
+
+    dataframe = pd.DataFrame(results)
+
+
+    print("="*60)
+    print("5-FOLD CROSS VALIDATION PERFORMANCE (CLASSIFICATION)")
+    print("="*60)
+
+    print(dataframe)
+
+
+    return dataframe, fold_scores
+
+
+
+
+
+# ==========================================================
 # GRID SEARCH
 # ==========================================================
 
@@ -241,7 +329,7 @@ def perform_grid_search(
     )
 
     print(
-        "Best CV R2:",
+        "Best CV Score:",
         round(
             grid.best_score_,
             4
@@ -318,7 +406,7 @@ def perform_random_search(
     )
 
     print(
-        "Best CV R2:",
+        "Best CV Score:",
         round(
             search.best_score_,
             4

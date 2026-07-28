@@ -1,6 +1,13 @@
+#visualization.py
 import os
 import matplotlib.pyplot as plt
 import numpy as np
+
+from sklearn.metrics import (
+    confusion_matrix,
+    roc_curve,
+    auc
+)
 
 
 FONT = "Times New Roman"
@@ -718,5 +725,300 @@ def plot_regression_scores(
     plt.grid(True)
 
     plt.tight_layout()
+
+    plt.show()
+
+
+
+# ==========================================================
+# CONFUSION MATRIX (Experiment 4)
+# ==========================================================
+
+def plot_confusion_matrix(
+    actual,
+    predicted,
+    model_name="model",
+    save_dir="../figures"
+):
+
+    os.makedirs(
+        save_dir,
+        exist_ok=True
+    )
+
+
+    cm = confusion_matrix(
+        actual,
+        predicted
+    )
+
+
+    plt.figure(
+        figsize=(6,5)
+    )
+
+
+    plt.imshow(
+        cm,
+        cmap="Blues"
+    )
+
+
+    plt.colorbar()
+
+
+    for i in range(cm.shape[0]):
+
+        for j in range(cm.shape[1]):
+
+            plt.text(
+                j,
+                i,
+                cm[i,j],
+                ha="center",
+                va="center",
+                fontsize=SIZE
+            )
+
+
+    plt.xticks(
+        [0,1],
+        ["Ham","Spam"]
+    )
+
+
+    plt.yticks(
+        [0,1],
+        ["Ham","Spam"]
+    )
+
+
+    format_plot(
+        f"{model_name} Confusion Matrix",
+        "Predicted Label",
+        "Actual Label"
+    )
+
+
+    plt.tight_layout()
+
+
+    plt.savefig(
+        os.path.join(
+            save_dir,
+            f"{model_name}_confusion_matrix.png"
+        ),
+        dpi=300
+    )
+
+
+    plt.show()
+
+
+
+# ==========================================================
+# ROC CURVE (Experiment 4)
+# ==========================================================
+
+def plot_roc_curve(
+    models_probabilities,
+    y_test,
+    save_dir="../figures"
+):
+    """
+    models_probabilities : dict {model_name: predicted_probability_of_spam}
+    """
+
+    os.makedirs(
+        save_dir,
+        exist_ok=True
+    )
+
+
+    plt.figure(
+        figsize=(7,6)
+    )
+
+
+    for name, probabilities in models_probabilities.items():
+
+        fpr, tpr, _ = roc_curve(
+            y_test,
+            probabilities
+        )
+
+        roc_auc = auc(
+            fpr,
+            tpr
+        )
+
+        plt.plot(
+            fpr,
+            tpr,
+            label=f"{name} (AUC = {roc_auc:.2f})"
+        )
+
+
+    plt.plot(
+        [0,1],
+        [0,1],
+        linestyle="--",
+        color="black"
+    )
+
+
+    format_plot(
+        "ROC Curve",
+        "False Positive Rate",
+        "True Positive Rate"
+    )
+
+
+    plt.legend()
+
+
+    plt.grid(True)
+
+
+    plt.tight_layout()
+
+
+    plt.savefig(
+        os.path.join(
+            save_dir,
+            "roc_curve.png"
+        ),
+        dpi=300
+    )
+
+
+    plt.show()
+
+
+
+# ==========================================================
+# CLASSIFICATION MODEL COMPARISON (Experiment 4)
+# ==========================================================
+
+def plot_classification_scores(
+    names,
+    scores,
+    ylabel="Accuracy",
+    save_dir="../figures"
+):
+
+    os.makedirs(
+        save_dir,
+        exist_ok=True
+    )
+
+
+    plt.figure(
+        figsize=(8,5)
+    )
+
+
+    plt.bar(
+        names,
+        scores
+    )
+
+
+    format_plot(
+        "Classification Model Comparison",
+        "Model",
+        ylabel
+    )
+
+
+    plt.xticks(
+        rotation=20,
+        fontsize=12,
+        fontname=FONT
+    )
+
+
+    plt.yticks(
+        fontsize=12,
+        fontname=FONT
+    )
+
+
+    plt.grid(True)
+
+
+    plt.tight_layout()
+
+
+    plt.savefig(
+        os.path.join(
+            save_dir,
+            "classification_model_comparison.png"
+        ),
+        dpi=300
+    )
+
+
+    plt.show()
+
+
+
+# ==========================================================
+# CLASSIFICATION CROSS VALIDATION SCORES (Experiment 4)
+# ==========================================================
+
+def plot_classification_cv_scores(
+    fold_scores,
+    save_dir="../figures"
+):
+    """
+    fold_scores : dict {model_name: array of per-fold accuracy}
+    """
+
+    os.makedirs(
+        save_dir,
+        exist_ok=True
+    )
+
+
+    plt.figure(
+        figsize=(7,5)
+    )
+
+
+    for name, scores in fold_scores.items():
+
+        plt.plot(
+            range(1,len(scores)+1),
+            scores,
+            marker="o",
+            label=name
+        )
+
+
+    format_plot(
+        "5 Fold Cross Validation Accuracy",
+        "Fold",
+        "Accuracy"
+    )
+
+
+    plt.legend()
+
+
+    plt.grid(True)
+
+
+    plt.tight_layout()
+
+
+    plt.savefig(
+        os.path.join(
+            save_dir,
+            "classification_cv_scores.png"
+        ),
+        dpi=300
+    )
+
 
     plt.show()

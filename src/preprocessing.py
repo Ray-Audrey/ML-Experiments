@@ -1,8 +1,22 @@
+import numpy as np
 import pandas as pd
 
+
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import StandardScaler
+
+from sklearn.preprocessing import (
+    StandardScaler,
+    OneHotEncoder
+)
+
+from sklearn.compose import ColumnTransformer
+
+from sklearn.pipeline import Pipeline
+
+from sklearn.impute import SimpleImputer
+
+
+
 
 
 # ==========================================================
@@ -10,214 +24,368 @@ from sklearn.preprocessing import StandardScaler
 # ==========================================================
 
 def remove_duplicates(df):
-    """
-    Remove duplicate rows.
-    """
 
     return df.drop_duplicates()
 
 
+
+
+
 # ==========================================================
-# DROP UNWANTED COLUMNS
+# DROP COLUMNS
 # ==========================================================
 
-def drop_columns(df, columns=None):
-    """
-    Drop unwanted columns if provided.
-    """
+def drop_columns(
+    df,
+    columns=None
+):
 
     if columns is None:
-        return df
 
-    return df.drop(columns=columns)
+        return df.copy()
+
+
+    return df.drop(
+        columns=columns,
+        errors="ignore"
+    ).copy()
+
+
+
 
 
 # ==========================================================
-# HANDLE MISSING VALUES
+# REPLACE MISSING VALUES
 # ==========================================================
 
-def handle_missing_values(df):
-    """
-    Fill missing values.
+def replace_missing_symbols(
+    df,
+    missing_values=None
+):
 
-    Numeric Columns      -> Mean
+    df=df.copy()
 
-    Categorical Columns  -> Mode
-    """
 
-    df = df.copy()
+    if missing_values:
 
-    for column in df.columns:
+        df.replace(
+            missing_values,
+            np.nan,
+            inplace=True
+        )
 
-        if pd.api.types.is_numeric_dtype(df[column]):
-
-            df[column] = df[column].fillna(
-                df[column].mean()
-            )
-
-        else:
-
-            df[column] = df[column].fillna(
-                df[column].mode()[0]
-            )
 
     return df
 
 
-# ==========================================================
-# ENCODE CATEGORICAL COLUMNS
-# ==========================================================
 
-def encode_categorical(df):
-    """
-    Encode only categorical columns.
-    """
-
-    df = df.copy()
-
-    encoders = {}
-
-    categorical_columns = df.select_dtypes(
-        include=["object", "category"]
-    ).columns
-
-    for column in categorical_columns:
-
-        encoder = LabelEncoder()
-
-        df[column] = encoder.fit_transform(df[column])
-
-        encoders[column] = encoder
-
-    return df, encoders
 
 
 # ==========================================================
-# SPLIT FEATURES AND TARGET
+# SPLIT FEATURES TARGET
 # ==========================================================
 
-def split_features_target(df, target_column):
-    """
-    Split dataset into X and y.
-    """
+def split_features_target(
+    df,
+    target_column
+):
 
-    X = df.drop(columns=[target_column])
+    # Remove rows where target is missing
+
+    df = df.dropna(
+        subset=[target_column]
+    )
+
+
+    X = df.drop(
+        columns=[target_column]
+    )
+
 
     y = df[target_column]
+
 
     return X, y
 
 
-# ==========================================================
-# SCALE FEATURES
-# ==========================================================
 
-def scale_features(X):
-    """
-    Standardize feature columns.
-    """
-
-    scaler = StandardScaler()
-
-    X_scaled = scaler.fit_transform(X)
-
-    return X_scaled, scaler
 
 
 # ==========================================================
-# COMPLETE PREPROCESSING PIPELINE
+# GET FEATURE NAMES
+# ==========================================================
+
+def get_feature_names(
+    preprocessor
+):
+
+    names = (
+        preprocessor
+        .get_feature_names_out()
+    )
+
+
+    cleaned=[]
+
+
+    for name in names:
+
+        name=name.replace(
+            "num__",
+            ""
+        )
+
+        name=name.replace(
+            "cat__",
+            ""
+        )
+
+        cleaned.append(name)
+
+
+    return np.array(cleaned)
+
+
+
+
+
+# ==========================================================
+# PREPROCESSING PIPELINE
 # ==========================================================
 
 def preprocess_data(
     df,
     target_column,
     drop_cols=None,
-    encode=True,
-    scale=True,
-    stratify=True,
+    missing_values=None,
     test_size=0.2,
-    random_state=42
+    random_state=42,
+    scale=True
 ):
-    """
-    Complete preprocessing pipeline.
-    """
 
-    # ------------------------------
-    # Remove duplicates
-    # ------------------------------
 
-    df = remove_duplicates(df)
+    df=remove_duplicates(df)
 
-    # ------------------------------
-    # Drop unwanted columns
-    # ------------------------------
 
-    df = drop_columns(df, drop_cols)
 
-    # ------------------------------
-    # Handle missing values
-    # ------------------------------
+    df=replace_missing_symbols(
+        df,
+        missing_values
+    )
 
-    df = handle_missing_values(df)
 
-    # ------------------------------
-    # Encode categorical columns
-    # ------------------------------
 
-    encoders = {}
+    # Default useless columns
 
-    if encode:
+    default_drop=[
+        "Customer ID",
+        "Name"
+    ]
 
-        df, encoders = encode_categorical(df)
 
-    # ------------------------------
-    # Split X and y
-    # ------------------------------
+    if drop_cols:
 
-    X, y = split_features_target(
+        default_drop.extend(
+            drop_cols
+        )
+
+
+
+    df=drop_columns(
+        df,
+        default_drop
+    )
+    # Remove invalid target values
+    
+    df = df.dropna(
+        subset=[target_column]
+    )
+    
+    
+    # Remove negative loan amounts
+    
+    df = df[
+        df[target_column] >= 0
+    ]
+
+
+    X,y=split_features_target(
         df,
         target_column
     )
 
-    # ------------------------------
-    # Scale Features
-    # ------------------------------
 
-    scaler = None
+
+    numerical_columns = X.select_dtypes(
+        include=np.number
+    ).columns
+
+
+
+    categorical_columns = X.select_dtypes(
+        include=[
+            "object",
+            "category"
+        ]
+    ).columns
+
+
+
+
+
+    # -------------------------------
+    # Numerical Pipeline
+    # -------------------------------
+
+    numeric_steps=[
+
+        (
+            "imputer",
+            SimpleImputer(
+                strategy="mean"
+            )
+        )
+
+    ]
+
+
 
     if scale:
 
-        X, scaler = scale_features(X)
+        numeric_steps.append(
 
-    # ------------------------------
-    # Train Test Split
-    # ------------------------------
+            (
+                "scaler",
+                StandardScaler()
+            )
 
-    if stratify:
-
-        X_train, X_test, y_train, y_test = train_test_split(
-            X,
-            y,
-            test_size=test_size,
-            random_state=random_state,
-            stratify=y
         )
 
-    else:
 
-        X_train, X_test, y_train, y_test = train_test_split(
-            X,
-            y,
-            test_size=test_size,
-            random_state=random_state
-        )
 
-    return (
-        X_train,
-        X_test,
-        y_train,
-        y_test,
-        scaler,
-        encoders
+    numeric_pipeline=Pipeline(
+        numeric_steps
     )
 
+
+
+
+
+    # -------------------------------
+    # Categorical Pipeline
+    # -------------------------------
+
+    categorical_pipeline=Pipeline(
+
+        [
+
+            (
+                "imputer",
+                SimpleImputer(
+                    strategy="most_frequent"
+                )
+            ),
+
+
+            (
+                "encoder",
+                OneHotEncoder(
+                    handle_unknown="ignore",
+                    sparse_output=False
+                )
+            )
+
+        ]
+
+    )
+
+
+
+
+
+    # -------------------------------
+    # Column Transformer
+    # -------------------------------
+
+    preprocessor=ColumnTransformer(
+
+        [
+
+            (
+                "num",
+                numeric_pipeline,
+                numerical_columns
+            ),
+
+
+            (
+                "cat",
+                categorical_pipeline,
+                categorical_columns
+            )
+
+        ]
+
+    )
+
+
+
+
+
+    # -------------------------------
+    # Split
+    # -------------------------------
+
+    X_train,X_test,y_train,y_test=train_test_split(
+
+        X,
+        y,
+        test_size=test_size,
+        random_state=random_state
+
+    )
+
+
+
+
+
+    # -------------------------------
+    # Fit only training data
+    # -------------------------------
+
+    X_train_processed=preprocessor.fit_transform(
+        X_train
+    )
+
+
+    X_test_processed=preprocessor.transform(
+        X_test
+    )
+
+
+
+
+
+    feature_names=get_feature_names(
+        preprocessor
+    )
+
+
+
+
+
+    return (
+
+        X_train_processed,
+
+        X_test_processed,
+
+        y_train,
+
+        y_test,
+
+        preprocessor,
+
+        feature_names
+
+    )
